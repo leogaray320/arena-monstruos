@@ -1,0 +1,54 @@
+{% extends "juego/base.html" %}
+
+{% block titulo %}Historial de batallas{% endblock %}
+
+{% block contenido %}
+<h1>Historial de batallas</h1>
+<p class="sub">Los combates más recientes aparecen primero. Abre una bitácora para ver los turnos.</p>
+
+<div class="grilla">
+  {% for batalla in pagina %}
+    <article class="carta">
+      <h2>Batalla #{{ batalla.pk }}</h2>
+      <p>
+        {{ batalla.monstruo_a.emoji }} {{ batalla.monstruo_a.nombre }}
+        <strong>vs.</strong>
+        {{ batalla.monstruo_b.emoji }} {{ batalla.monstruo_b.nombre }}
+      </p>
+      <p class="sub">
+        {% if batalla.ganador %}
+          Ganador: <strong>{{ batalla.ganador.nombre }}</strong>
+        {% else %}
+          Empate
+        {% endif %}
+        &middot; {{ batalla.turnos }} turnos
+      </p>
+      <p class="sub">{{ batalla.fecha|date:"d/m/Y H:i" }}</p>
+      <details>
+        <summary>Ver bitácora</summary>
+        <div class="bitacora">
+          {% for linea in batalla.lineas_bitacora %}
+            <div>{{ linea }}</div>
+          {% empty %}
+            <div>Esta batalla no tiene entradas en la bitácora.</div>
+          {% endfor %}
+        </div>
+      </details>
+    </article>
+  {% empty %}
+    <p>Todavía no hay batallas. <a href="{% url 'juego:arena' %}">Inicia la primera</a>.</p>
+  {% endfor %}
+</div>
+
+{% if pagina.has_other_pages %}
+  <nav class="paginacion" aria-label="Paginación del historial">
+    {% if pagina.has_previous %}
+      <a class="btn" href="?page={{ pagina.previous_page_number }}">Anterior</a>
+    {% endif %}
+    <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}
+      <a class="btn" href="?page={{ pagina.next_page_number }}">Siguiente</a>
+    {% endif %}
+  </nav>
+{% endif %}
+{% endblock %}

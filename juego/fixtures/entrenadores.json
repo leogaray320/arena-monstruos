@@ -1,0 +1,65 @@
+[
+  {
+    "model": "juego.entrenador",
+    "pk": 1,
+    "fields": {
+      "nombre": "Profesor Oak",
+      "email": "oak@inacap.cl",
+      "creado": "2026-03-01T10:00:00Z"
+    }
+  },
+  {
+    "model": "juego.entrenador",
+    "pk": 2,
+    "fields": {
+      "nombre": "Equipo Rocket",
+      "email": "rocket@inacap.cl",
+      "creado": "2026-03-01T10:05:00Z"
+    }
+  },
+  {
+    "model": "juego.monstruo",
+    "pk": 1,
+    "fields": {
+      "nombre": "Pyroclasto",
+      "tipo": "fuego",
+      "emoji": "🔥",
+      "hp": 120,
+      "ataque": 70,
+      "defensa": 40,
+      "nivel": 3,
+      "entrenador": 1,
+      "creado": "2026-03-02T09:00:00Z"
+    }
+  },
+  {
+    "model": "juego.monstruo",
+    "pk": 2,
+    "fields": {
+      "nombre": "Raizul",
+      "tipo": "planta",
+      "emoji": "🌿",
+      "hp": 140,
+      "ataque": 50,
+      "defensa": 60,
+      "nivel": 2,
+      "entrenador": 1,
+      "creado": "2026-03-02T09:10:00Z"
+    }
+  },
+  {
+    "model": "juego.monstruo",
+    "pk": 3,
+    "fields": {
+      "nombre": "Voltio",
+      "tipo": "electrico",
+      "emoji": "⚡",
+      "hp": 100,
+      "ataque": 80,
+      "defensa": 30,
+      "nivel": 4,
+      "entrenador": 2,
+      "creado": "2026-03-02T09:30:00Z"
+    }
+  }
+]

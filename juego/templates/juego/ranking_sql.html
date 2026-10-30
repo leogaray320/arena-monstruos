@@ -1,0 +1,42 @@
+{% extends "juego/base.html" %}
+
+{% block titulo %}Ranking SQL{% endblock %}
+
+{% block contenido %}
+<h1>Ranking con SQL</h1>
+<p class="sub">La consulta se ejecuta directamente con un cursor de la conexión configurada en Django.</p>
+
+<div class="acciones" style="margin-bottom: 16px;">
+  <a class="btn" href="{% url 'juego:ranking' %}">Comparar con el ORM</a>
+  <a class="btn" href="{% url 'juego:arena' %}">Ir a la arena</a>
+</div>
+
+<pre class="sql"><code>{{ consulta }}</code></pre>
+
+<div style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Posición</th>
+        <th>Monstruo</th>
+        <th>Entrenador</th>
+        <th>Batallas</th>
+        <th>Victorias</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fila in filas %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ fila.nombre }}</td>
+          <td>{{ fila.entrenador }}</td>
+          <td>{{ fila.peleas }}</td>
+          <td class="oro">{{ fila.ganadas }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5">Todavía no hay monstruos registrados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

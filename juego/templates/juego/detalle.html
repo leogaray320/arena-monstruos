@@ -1,0 +1,43 @@
+{% extends "juego/base.html" %}
+
+{% block titulo %}{{ monstruo.nombre }}{% endblock %}
+
+{% block contenido %}
+<h1>{{ monstruo.nombre }}</h1>
+<p class="sub">Entrenador: {{ monstruo.entrenador.nombre }} &middot; Tipo: <span class="tipo">{{ monstruo.get_tipo_display }}</span></p>
+
+<div class="carta" style="max-width: 620px;">
+  {% if monstruo.foto %}
+    <img class="retrato retrato-grande" src="{{ monstruo.foto.url }}" alt="Foto de {{ monstruo.nombre }}">
+  {% else %}
+    <div class="emoji" style="font-size: 3rem; margin-bottom: 8px;">{{ monstruo.emoji }}</div>
+  {% endif %}
+  <p class="stats">
+    <span>HP <strong>{{ monstruo.hp }}</strong></span>
+    <span>ATK <strong>{{ monstruo.ataque_total }}</strong></span>
+    <span>DEF <strong>{{ monstruo.defensa_total }}</strong></span>
+  </p>
+  <p class="stats">
+    <span>Nivel <strong>{{ monstruo.nivel }}</strong></span>
+    <span>Poder <strong>{{ monstruo.poder }}</strong></span>
+  </p>
+  {% if monstruo.items.exists %}
+    <p><strong>Objetos equipados:</strong>
+      {% for item in monstruo.items.all %}
+        {{ item.nombre }}{% if not forloop.last %}, {% endif %}
+      {% endfor %}
+    </p>
+  {% endif %}
+  <p class="sub">Creado: {{ monstruo.creado|date:"d/m/Y H:i" }}</p>
+
+  <div class="acciones">
+    <form method="post" action="{% url 'juego:entrenar' monstruo.pk %}">
+      {% csrf_token %}
+      <button class="btn btn-principal" type="submit">Entrenar (+1 nivel)</button>
+    </form>
+    <a class="btn" href="{% url 'juego:editar' monstruo.pk %}">Editar</a>
+    <a class="btn btn-peligro" href="{% url 'juego:eliminar' monstruo.pk %}">Eliminar</a>
+    <a class="btn btn-principal" href="{% url 'juego:lista' %}">Volver al listado</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1169 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Lautaro Fernando Cornejo Arcos">
+<meta name="description" content="Enunciado y rúbrica del taller Arena de Monstruos: CRUD en Django contra MySQL con mysqlclient. INACAP.">
+<title>Arena de Monstruos · Enunciado y rúbrica · INACAP</title>
+<style>
+:root{
+  --rojo:#E4002B;
+  --rojo-oscuro:#A8001F;
+  --rojo-claro:#fdeef1;
+  --negro:#111111;
+  --negro-suave:#1d1d1f;
+  --gris:#f3f4f6;
+  --gris-borde:#e2e3e7;
+  --gris-texto:#5c5f66;
+  --blanco:#ffffff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--gris);color:var(--negro);
+  font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  font-size:16px;line-height:1.68;
+}
+
+/* cabecera */
+.cinta{height:6px;background:var(--rojo)}
+.cabecera{background:var(--negro);color:var(--blanco);padding:20px 28px}
+.cabecera-fila{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+.marca{display:flex;align-items:center;gap:14px}
+.sello{background:var(--rojo);color:#fff;font-weight:800;letter-spacing:.14em;font-size:1.05rem;padding:7px 14px;border-radius:4px}
+.marca-texto strong{display:block;font-size:1.02rem}
+.marca-texto span{display:block;font-size:.82rem;color:#b9bbc4}
+.docente{text-align:right;font-size:.8rem;color:#b9bbc4}
+.docente strong{display:block;color:#fff;font-size:.95rem}
+
+/* estructura */
+.envoltorio{max-width:1120px;margin:0 auto;padding:28px}
+.hoja{background:var(--blanco);border:1px solid var(--gris-borde);border-radius:10px;padding:40px 52px 54px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.portada{border-left:8px solid var(--rojo);background:var(--negro);color:#fff;border-radius:10px;padding:40px 52px;margin-bottom:24px}
+.portada h1{margin:0 0 10px;font-size:2.3rem;line-height:1.15}
+.portada p{color:#c9cbd3;max-width:70ch;margin:0 0 10px}
+.etiqueta{display:inline-block;background:var(--rojo);color:#fff;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:5px 11px;border-radius:3px;margin-bottom:16px}
+.ficha{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:14px;margin-top:24px}
+.ficha div{background:#000;border:1px solid #2a2a2e;border-radius:8px;padding:12px 14px}
+.ficha strong{display:block;color:var(--rojo);font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;margin-bottom:2px}
+.ficha span{color:#e8e9ee;font-size:.92rem}
+
+/* tipografia */
+h1,h2,h3,h4{line-height:1.25}
+.hoja>h1{font-size:1.9rem;margin:0 0 8px;padding-bottom:14px;border-bottom:4px solid var(--rojo)}
+h2{font-size:1.4rem;margin:46px 0 14px;padding-left:15px;border-left:5px solid var(--rojo)}
+h3{font-size:1.1rem;margin:30px 0 8px;color:var(--rojo-oscuro)}
+h4{font-size:.98rem;margin:20px 0 6px;text-transform:uppercase;letter-spacing:.06em;color:var(--gris-texto)}
+p{margin:0 0 14px}
+a{color:var(--rojo-oscuro)}
+hr{border:0;border-top:1px solid var(--gris-borde);margin:34px 0}
+.bajada{color:var(--gris-texto);font-size:1.04rem;margin-bottom:28px}
+ul,ol{margin:0 0 16px;padding-left:24px}
+li{margin-bottom:7px}
+code{font-family:Consolas,"Courier New",monospace;font-size:.88em;background:var(--rojo-claro);color:var(--rojo-oscuro);padding:1px 5px;border-radius:4px}
+pre{background:var(--negro);color:#f1f1f3;padding:15px 18px;border-radius:8px;border-left:5px solid var(--rojo);overflow-x:auto;margin:0 0 18px}
+pre code{background:none;color:inherit;padding:0;font-size:.85rem}
+
+/* tablas */
+.tabla-scroll{overflow-x:auto;margin:0 0 20px}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+thead th{background:var(--negro);color:#fff;text-align:left;font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;padding:10px 12px}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--gris-borde);vertical-align:top}
+tbody tr:nth-child(even){background:#fafafb}
+tbody tr:hover{background:var(--rojo-claro)}
+td.pts{text-align:center;font-weight:700;white-space:nowrap}
+tfoot td{padding:10px 12px;font-weight:700;border-top:2px solid var(--negro)}
+
+/* indice */
+.indice{background:var(--blanco);border:1px solid var(--gris-borde);border-radius:10px;padding:22px 26px;margin-bottom:24px}
+.indice h2{margin:0 0 12px;padding:0;border:0;font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;color:var(--gris-texto)}
+.indice ol{columns:2;column-gap:34px;margin:0;padding-left:20px;font-size:.93rem}
+.indice a{color:var(--negro);text-decoration:none}
+.indice a:hover{color:var(--rojo);text-decoration:underline}
+
+/* cajas didacticas */
+.caja{border-radius:0 8px 8px 0;padding:14px 18px;margin:0 0 18px;border-left:5px solid var(--rojo);background:var(--rojo-claro)}
+.caja p:last-child{margin-bottom:0}
+.caja .rotulo{display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;color:var(--rojo-oscuro);margin-bottom:5px}
+.caja.pista{background:#f6f7f9;border-left-color:var(--negro)}
+.caja.pista .rotulo{color:var(--negro)}
+.caja.prueba{background:#fff;border:1px solid var(--gris-borde);border-left:5px solid var(--negro)}
+.caja.prueba .rotulo{color:var(--negro)}
+.caja.ojo{background:#fff6f7;border-left-color:var(--rojo)}
+.caja pre{margin:10px 0 0}
+
+/* niveles */
+.nivel{border:1px solid var(--gris-borde);border-top:6px solid var(--rojo);border-radius:10px;padding:26px 30px 10px;margin:0 0 26px;background:var(--blanco)}
+.nivel-cabeza{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.nivel-cabeza h3{margin:0;font-size:1.3rem;color:var(--negro)}
+.chapa{background:var(--negro);color:#fff;font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;padding:5px 11px;border-radius:999px;white-space:nowrap}
+.chapa.rojo{background:var(--rojo)}
+.meta-nivel{color:var(--gris-texto);font-size:.92rem;margin-bottom:18px}
+ul.tareas{list-style:none;padding-left:0;margin:0 0 18px}
+ul.tareas li{position:relative;padding:7px 0 7px 34px;border-bottom:1px dashed var(--gris-borde)}
+ul.tareas li::before{content:"";position:absolute;left:2px;top:12px;width:15px;height:15px;border:2px solid var(--rojo);border-radius:3px;background:#fff}
+
+/* diagrama */
+.diagrama{background:#fff;border:1px solid var(--gris-borde);border-radius:10px;padding:18px;margin:0 0 10px;overflow-x:auto}
+.diagrama svg{display:block;width:100%;height:auto;min-width:620px}
+.pie-figura{color:var(--gris-texto);font-size:.85rem;margin:0 0 22px}
+
+/* glosario */
+dl.glosario{margin:0 0 20px}
+dl.glosario dt{font-weight:700;margin-top:16px;color:var(--negro)}
+dl.glosario dt code{font-size:.92em}
+dl.glosario dd{margin:4px 0 0;padding-left:16px;border-left:3px solid var(--gris-borde)}
+
+/* pie */
+.pie{background:var(--negro);color:#9a9ca5;margin-top:40px}
+.pie-fila{max-width:1120px;margin:0 auto;padding:22px 28px;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;font-size:.82rem}
+.pie strong{color:#fff}
+
+@media (max-width:820px){
+  .hoja,.portada{padding:26px 22px 34px}
+  .envoltorio{padding:16px}
+  .indice ol{columns:1}
+}
+
+@media print{
+  body{background:#fff;font-size:11pt}
+  .cinta,.indice{display:none!important}
+  .cabecera{background:#fff;color:var(--negro);border-bottom:3px solid var(--rojo);padding:0 0 10px}
+  .marca-texto span,.docente{color:#444}
+  .sello{background:#fff;color:var(--rojo);border:2px solid var(--rojo)}
+  .portada{background:#fff;color:var(--negro);border:1px solid #999;border-left:8px solid var(--rojo)}
+  .portada p{color:#333}
+  .ficha div{background:#f6f6f6;border:1px solid #ccc}
+  .ficha span{color:#111}
+  .hoja{border:0;box-shadow:none;padding:0}
+  .envoltorio{padding:0;max-width:none}
+  pre{background:#f6f6f6;color:#111;border:1px solid #999}
+  thead th{background:#333!important}
+  .pie{background:#fff;color:#444;border-top:1px solid #999}
+  h2,h3{page-break-after:avoid}
+  pre,table,.caja,.nivel,.diagrama{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="cinta"></div>
+<header class="cabecera">
+  <div class="cabecera-fila">
+    <div class="marca">
+      <span class="sello">INACAP</span>
+      <span class="marca-texto">
+        <strong>Arena de Monstruos</strong>
+        <span>Taller Django + MySQL (mysqlclient)</span>
+      </span>
+    </div>
+    <div class="docente">
+      Docente
+      <strong>Lautaro Fernando Cornejo Arcos</strong>
+    </div>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+  <section class="portada">
+    <span class="etiqueta">Enunciado y rúbrica</span>
+    <h1>Arena de Monstruos</h1>
+    <p>
+      Vas a construir la aplicación web que administra un torneo de monstruos:
+      la base de datos en MySQL, el CRUD completo, el combate y las consultas
+      que generan la tabla de posiciones.
+    </p>
+    <p>
+      Es un CRUD como cualquier otro, pero con una diferencia: cada operación
+      tiene una razón de ser dentro del juego, y el ranking te obliga a usar
+      <code>JOIN</code>, <code>GROUP BY</code> e índices de verdad, no de ejemplo.
+    </p>
+    <div class="ficha">
+      <div><strong>Modalidad</strong><span>Individual o en parejas</span></div>
+      <div><strong>Tecnología</strong><span>Django + MySQL (mysqlclient)</span></div>
+      <div><strong>Evaluación</strong><span>100 puntos + defensa oral</span></div>
+      <div><strong>Entrega</strong><span>Proyecto + dump .sql</span></div>
+    </div>
+  </section>
+
+  <nav class="indice">
+    <h2>Contenido</h2>
+    <ol>
+      <li><a href="#que-construyes">Qué vas a construir</a></li>
+      <li><a href="#base-datos">Cómo es la base de datos</a></li>
+      <li><a href="#reglas">Las reglas del juego son las reglas de negocio</a></li>
+      <li><a href="#punto-partida">Qué te entrego y qué haces tú</a></li>
+      <li><a href="#niveles">Los cuatro niveles, paso a paso</a></li>
+      <li><a href="#conceptos">Conceptos que se evalúan, explicados</a></li>
+      <li><a href="#defensa">La defensa: preguntas y respuestas esperadas</a></li>
+      <li><a href="#entrega">Qué entregar y cómo</a></li>
+      <li><a href="#rubrica">Rúbrica de evaluación</a></li>
+      <li><a href="#autoevaluacion">Autoevaluación antes de entregar</a></li>
+    </ol>
+  </nav>
+
+  <main class="hoja">
+
+    <h1>Parte 1 &mdash; Enunciado</h1>
+    <p class="bajada">
+      Lee esta parte completa antes de escribir código. Cada nivel te dice qué
+      entregar, cómo se hace y cómo comprobar que quedó bien.
+    </p>
+
+    <!-- ================================================================== -->
+    <h2 id="que-construyes">1. Qué vas a construir</h2>
+
+    <p>
+      Una aplicación web con seis pantallas. Las dos primeras ya funcionan en el
+      proyecto base; las demás son tu trabajo:
+    </p>
+
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Pantalla</th><th>Ruta</th><th>Qué hace</th><th>Qué operación de base de datos practica</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Monstruopedia</strong></td><td><code>/</code></td><td>Lista todos los monstruos con búsqueda, filtro y orden</td><td><code>SELECT</code> con <code>WHERE</code>, <code>ORDER BY</code> y <code>LIMIT</code></td></tr>
+        <tr><td><strong>Reclutar</strong></td><td><code>/monstruo/nuevo/</code></td><td>Formulario para crear un monstruo, con su foto opcional</td><td><code>INSERT</code> con validación previa</td></tr>
+        <tr><td><strong>Detalle</strong></td><td><code>/monstruo/1/</code></td><td>Ficha del monstruo con sus stats y su historial</td><td><code>SELECT</code> por clave primaria + relaciones</td></tr>
+        <tr><td><strong>Editar</strong></td><td><code>/monstruo/1/editar/</code></td><td>Modifica un monstruo existente</td><td><code>UPDATE</code></td></tr>
+        <tr><td><strong>Eliminar</strong></td><td><code>/monstruo/1/eliminar/</code></td><td>Confirma y retira un monstruo</td><td><code>DELETE</code> y efecto en cascada</td></tr>
+        <tr><td><strong>Arena</strong></td><td><code>/arena/</code></td><td>Elige dos monstruos, resuelve el combate y lo guarda</td><td><code>INSERT</code> generado por lógica, no por formulario</td></tr>
+        <tr><td><strong>Ranking</strong></td><td><code>/ranking/</code> y <code>/ranking/sql/</code></td><td>Tabla de posiciones, calculada dos veces: con el ORM y con SQL escrito a mano</td><td><code>JOIN</code> + <code>GROUP BY</code> + <code>COUNT</code></td></tr>
+        <tr><td><strong>Historial</strong></td><td><code>/historial/</code></td><td>Todas las batallas con su bitácora turno a turno</td><td><code>SELECT</code> paginado y ordenado por fecha</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="caja">
+      <span class="rotulo">La idea de fondo</span>
+      <p>
+        El CRUD no es el objetivo, es la excusa. Lo que se evalúa es si entiendes
+        <strong>qué le pasa a la base de datos</strong> en cada clic: qué consulta se
+        ejecuta, cuántas veces, qué pasa con las filas relacionadas y dónde vive
+        cada regla.
+      </p>
+    </div>
+
+    <!-- ================================================================== -->
+    <h2 id="base-datos">2. Cómo es la base de datos</h2>
+
+    <p>
+      Cinco tablas. Cuatro las defines con modelos; la quinta la crea Django sola
+      para resolver la relación muchos a muchos.
+    </p>
+
+    <div class="diagrama">
+      <svg viewBox="0 0 760 430" role="img" aria-label="Diagrama entidad relación: Entrenador uno a muchos Monstruo, Monstruo muchos a muchos Item, y Batalla con tres claves foráneas a Monstruo">
+        <defs>
+          <marker id="flecha" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#111111"></path>
+          </marker>
+        </defs>
+
+        <!-- Entrenador -->
+        <rect x="14" y="52" width="196" height="104" rx="8" fill="#ffffff" stroke="#111111" stroke-width="2"></rect>
+        <rect x="14" y="52" width="196" height="26" rx="8" fill="#111111"></rect>
+        <text x="26" y="70" fill="#ffffff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">juego_entrenador</text>
+        <text x="26" y="98" font-family="Consolas,monospace" font-size="12" fill="#A8001F" font-weight="700">id (PK)</text>
+        <text x="26" y="117" font-family="Consolas,monospace" font-size="12" fill="#111111">nombre</text>
+        <text x="26" y="136" font-family="Consolas,monospace" font-size="12" fill="#111111">email (UNIQUE)</text>
+
+        <!-- Monstruo -->
+        <rect x="282" y="30" width="206" height="150" rx="8" fill="#ffffff" stroke="#E4002B" stroke-width="3"></rect>
+        <rect x="282" y="30" width="206" height="26" rx="8" fill="#E4002B"></rect>
+        <text x="294" y="48" fill="#ffffff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">juego_monstruo</text>
+        <text x="294" y="76" font-family="Consolas,monospace" font-size="12" fill="#A8001F" font-weight="700">id (PK)</text>
+        <text x="294" y="95" font-family="Consolas,monospace" font-size="12" fill="#111111">nombre, tipo, emoji</text>
+        <text x="294" y="114" font-family="Consolas,monospace" font-size="12" fill="#111111">hp, ataque, defensa</text>
+        <text x="294" y="133" font-family="Consolas,monospace" font-size="12" fill="#111111">nivel</text>
+        <text x="294" y="152" font-family="Consolas,monospace" font-size="12" fill="#A8001F" font-weight="700">entrenador_id (FK)</text>
+        <text x="294" y="171" font-family="Consolas,monospace" font-size="12" fill="#111111">creado</text>
+
+        <!-- Item -->
+        <rect x="560" y="52" width="186" height="104" rx="8" fill="#ffffff" stroke="#111111" stroke-width="2"></rect>
+        <rect x="560" y="52" width="186" height="26" rx="8" fill="#111111"></rect>
+        <text x="572" y="70" fill="#ffffff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">juego_item</text>
+        <text x="572" y="98" font-family="Consolas,monospace" font-size="12" fill="#A8001F" font-weight="700">id (PK)</text>
+        <text x="572" y="117" font-family="Consolas,monospace" font-size="12" fill="#111111">nombre</text>
+        <text x="572" y="136" font-family="Consolas,monospace" font-size="12" fill="#111111">bonus_ataque/defensa</text>
+
+        <!-- tabla intermedia -->
+        <rect x="560" y="214" width="186" height="60" rx="8" fill="#f3f4f6" stroke="#111111" stroke-width="1.5" stroke-dasharray="5 4"></rect>
+        <text x="572" y="236" font-family="Segoe UI,Arial" font-size="12" font-weight="700" fill="#111111">juego_monstruo_items</text>
+        <text x="572" y="256" font-family="Consolas,monospace" font-size="11" fill="#5c5f66">monstruo_id + item_id</text>
+
+        <!-- Batalla -->
+        <rect x="282" y="268" width="206" height="146" rx="8" fill="#ffffff" stroke="#111111" stroke-width="2"></rect>
+        <rect x="282" y="268" width="206" height="26" rx="8" fill="#111111"></rect>
+        <text x="294" y="286" fill="#ffffff" font-family="Segoe UI,Arial" font-size="13" font-weight="700">juego_batalla</text>
+        <text x="294" y="314" font-family="Consolas,monospace" font-size="12" fill="#A8001F" font-weight="700">id (PK)</text>
+        <text x="294" y="333" font-family="Consolas,monospace" font-size="12" fill="#A8001F" font-weight="700">monstruo_a_id (FK)</text>
+        <text x="294" y="352" font-family="Consolas,monospace" font-size="12" fill="#A8001F" font-weight="700">monstruo_b_id (FK)</text>
+        <text x="294" y="371" font-family="Consolas,monospace" font-size="12" fill="#A8001F" font-weight="700">ganador_id (FK, NULL)</text>
+        <text x="294" y="390" font-family="Consolas,monospace" font-size="12" fill="#111111">turnos, bitacora, fecha</text>
+
+        <!-- relaciones -->
+        <line x1="210" y1="104" x2="278" y2="104" stroke="#111111" stroke-width="2" marker-end="url(#flecha)"></line>
+        <text x="214" y="96" font-family="Segoe UI,Arial" font-size="12" font-weight="700" fill="#A8001F">1 : N</text>
+
+        <line x1="488" y1="104" x2="556" y2="104" stroke="#111111" stroke-width="2"></line>
+        <text x="496" y="96" font-family="Segoe UI,Arial" font-size="12" font-weight="700" fill="#A8001F">N : N</text>
+        <line x1="653" y1="156" x2="653" y2="210" stroke="#111111" stroke-width="1.5" stroke-dasharray="5 4"></line>
+        <line x1="488" y1="244" x2="556" y2="244" stroke="#111111" stroke-width="1.5" stroke-dasharray="5 4"></line>
+
+        <line x1="360" y1="180" x2="360" y2="264" stroke="#111111" stroke-width="2" marker-end="url(#flecha)"></line>
+        <line x1="410" y1="180" x2="410" y2="264" stroke="#111111" stroke-width="2" marker-end="url(#flecha)"></line>
+        <line x1="460" y1="180" x2="460" y2="264" stroke="#E4002B" stroke-width="2" marker-end="url(#flecha)"></line>
+        <text x="150" y="226" font-family="Segoe UI,Arial" font-size="12" font-weight="700" fill="#111111">3 claves foráneas</text>
+        <text x="150" y="244" font-family="Segoe UI,Arial" font-size="11" fill="#5c5f66">monstruo_a, monstruo_b</text>
+        <text x="150" y="260" font-family="Segoe UI,Arial" font-size="11" fill="#5c5f66">y ganador (puede ser NULL)</text>
+      </svg>
+    </div>
+    <p class="pie-figura">
+      Figura 1. Las tablas del taller. La caja con línea punteada la genera Django
+      sola a partir del <code>ManyToManyField</code>: tú nunca la escribes.
+    </p>
+
+    <h3>Qué significa cada relación, en palabras</h3>
+    <ul>
+      <li>
+        <strong>Un entrenador tiene muchos monstruos (1:N).</strong> El dato que
+        conecta las dos tablas es la columna <code>entrenador_id</code> dentro de
+        <code>juego_monstruo</code>. Esa columna es la <em>clave foránea</em>: guarda
+        el <code>id</code> de la fila del entrenador dueño.
+      </li>
+      <li>
+        <strong>Un monstruo puede equipar muchos ítems y un ítem puede estar en
+        muchos monstruos (N:N).</strong> Dos tablas no alcanzan para eso, así que se
+        necesita una tercera que solo guarda pares
+        <code>(monstruo_id, item_id)</code>. Django la crea y la administra sola.
+      </li>
+      <li>
+        <strong>Una batalla apunta tres veces a la misma tabla.</strong> El
+        combatiente A, el combatiente B y el ganador son todos monstruos. Por eso
+        necesitas <code>related_name</code> distintos en cada clave foránea: si no,
+        Django no sabría cómo llamar a cada relación inversa.
+      </li>
+    </ul>
+
+    <h3>El borrado: <code>on_delete</code> no es decoración</h3>
+    <p>
+      Cuando declaras una clave foránea, Django te obliga a decidir qué pasa con la
+      fila hija si desaparece la fila padre. En este taller usamos las tres opciones
+      más comunes, cada una con su razón:
+    </p>
+
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Relación</th><th>Opción</th><th>Qué ocurre</th><th>Por qué esa y no otra</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>Monstruo.entrenador</code></td>
+          <td><code>PROTECT</code></td>
+          <td>MySQL impide borrar un entrenador que todavía tiene monstruos; Django lanza <code>ProtectedError</code></td>
+          <td>Borrar un entrenador dejaría monstruos huérfanos. Mejor que la aplicación te obligue a resolverlo a mano</td>
+        </tr>
+        <tr>
+          <td><code>Batalla.monstruo_a</code> y <code>monstruo_b</code></td>
+          <td><code>CASCADE</code></td>
+          <td>Si borras un monstruo, se borran también las batallas donde peleó</td>
+          <td>Una batalla sin alguno de sus dos combatientes no significa nada: es basura en la tabla</td>
+        </tr>
+        <tr>
+          <td><code>Batalla.ganador</code></td>
+          <td><code>SET_NULL</code></td>
+          <td>La batalla sobrevive, pero su columna <code>ganador_id</code> queda en <code>NULL</code></td>
+          <td>El hecho histórico "hubo una pelea" sigue siendo verdad aunque el campeón ya no esté. Por eso el campo admite nulos</td>
+        </tr>
+      </tbody>
+    </table></div>
+
+    <div class="caja ojo">
+      <span class="rotulo">Ojo con esto</span>
+      <p>
+        <code>CASCADE</code> y <code>SET_NULL</code> sobre la <strong>misma tabla</strong>
+        conviven sin problema: cuando borras un monstruo, sus batallas como
+        combatiente se van, y en las batallas donde solo fue ganador queda el
+        registro con <code>NULL</code>. Esto se pregunta en la defensa y conviene
+        que lo pruebes antes, no que lo supongas.
+      </p>
+    </div>
+
+    <!-- ================================================================== -->
+    <h2 id="reglas">3. Las reglas del juego son las reglas de negocio</h2>
+
+    <h3>Presupuesto de estadísticas</h3>
+    <p>
+      Un monstruo no puede ser invencible. La regla es:
+    </p>
+    <pre><code>ataque + defensa + (hp / 2)  &lt;=  250</code></pre>
+    <p>Con números concretos:</p>
+
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Monstruo</th><th>HP</th><th>Ataque</th><th>Defensa</th><th>Cálculo</th><th>¿Pasa?</th></tr></thead>
+      <tbody>
+        <tr><td>Pyroclasto</td><td>120</td><td>70</td><td>40</td><td>70 + 40 + 60 = <strong>170</strong></td><td>Sí, le sobran 80 puntos</td></tr>
+        <tr><td>Pedregal</td><td>160</td><td>45</td><td>75</td><td>45 + 75 + 80 = <strong>200</strong></td><td>Sí</td></tr>
+        <tr><td>Tramposo</td><td>250</td><td>120</td><td>120</td><td>120 + 120 + 125 = <strong>365</strong></td><td>No: la aplicación debe rechazarlo</td></tr>
+      </tbody>
+    </table></div>
+
+    <p>
+      Además, cada estadística tiene su rango: <code>hp</code> entre 50 y 250;
+      <code>ataque</code> y <code>defensa</code> entre 10 y 120. Esos rangos ya están
+      puestos como <code>validators</code> en el modelo; el presupuesto, en cambio,
+      es tuyo y va en <code>clean()</code>, porque depende de <em>varios</em> campos
+      a la vez.
+    </p>
+
+    <div class="caja pista">
+      <span class="rotulo">Por qué en el modelo y no en el template</span>
+      <p>
+        Si la regla vive en el modelo, se cumple siempre: desde el formulario, desde
+        el <code>admin</code>, desde el <code>shell</code> y desde cualquier script
+        futuro. Si la escribes en el template o en JavaScript, basta un
+        <code>POST</code> hecho a mano para saltarla. Esa diferencia es la que se
+        está evaluando.
+      </p>
+    </div>
+
+    <h3>Ventaja de tipo</h3>
+    <p>
+      Cada tipo pega más fuerte contra un tipo determinado: el daño se multiplica
+      por <strong>1.25</strong>. La tabla ya está en el código
+      (<code>VENTAJAS</code> en <code>models.py</code>) y el motor de combate la usa
+      solo.
+    </p>
+
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Tipo</th><th>Es fuerte contra</th></tr></thead>
+      <tbody>
+        <tr><td>Fuego</td><td>Planta</td></tr>
+        <tr><td>Planta</td><td>Agua</td></tr>
+        <tr><td>Agua</td><td>Fuego</td></tr>
+        <tr><td>Eléctrico</td><td>Agua</td></tr>
+        <tr><td>Roca</td><td>Eléctrico</td></tr>
+        <tr><td>Sombra</td><td>Roca</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Las otras tres reglas</h3>
+    <ul>
+      <li>Un monstruo <strong>no puede pelear contra sí mismo</strong>: eso se valida en el formulario de la arena.</li>
+      <li><strong>Toda pelea queda registrada</strong> en la base de datos, con su ganador, sus turnos y su bitácora completa.</li>
+      <li>
+        Cada monstruo puede tener <strong>una foto</strong> (JPG o PNG, menos de
+        2 MB). Es opcional: cuando no hay foto se muestra el emoji, así que la
+        página nunca queda con un hueco. Cómo se implementa está en el nivel
+        diamante, en la sección 5.
+      </li>
+    </ul>
+
+    <!-- ================================================================== -->
+    <h2 id="punto-partida">4. Qué te entrego y qué haces tú</h2>
+
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Ya está hecho en el proyecto base</th><th>Lo construyes tú</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Django configurado contra MySQL con <code>mysqlclient</code>, incluida la conexión por variables de entorno</td>
+          <td>Todo lo marcado con <code>TODO BRONCE</code>, <code>PLATA</code>, <code>ORO</code> y <code>DIAMANTE</code> en el código</td>
+        </tr>
+        <tr>
+          <td>Modelos <code>Entrenador</code> y <code>Monstruo</code> con su relación 1:N y su migración inicial</td>
+          <td>Los modelos <code>Batalla</code> (oro) e <code>Item</code> con su <code>ManyToMany</code> (diamante)</td>
+        </tr>
+        <tr>
+          <td>Listado (READ) y creación (CREATE) funcionando, con <code>MonstruoForm</code></td>
+          <td>Detalle, edición y eliminación; después búsqueda, filtros, orden y paginación</td>
+        </tr>
+        <tr>
+          <td>El <strong>motor de combate</strong> completo en <code>juego/combate.py</code></td>
+          <td>Conectarlo: la vista de la arena que lo llama y <strong>guarda</strong> el resultado</td>
+        </tr>
+        <tr>
+          <td>El CSS terminado y las plantillas <code>base.html</code>, <code>lista.html</code> y <code>formulario.html</code></td>
+          <td>Las plantillas que falten: detalle, confirmación de borrado, arena, ranking e historial</td>
+        </tr>
+        <tr>
+          <td>Siete tests de ejemplo que ya pasan</td>
+          <td>Al menos cuatro tests propios (los nombres sugeridos están al final de <code>tests.py</code>)</td>
+        </tr>
+      </tbody>
+    </table></div>
+
+    <div class="caja pista">
+      <span class="rotulo">Cómo encontrar tu trabajo</span>
+      <p>Busca los comentarios en todo el proyecto desde la terminal:</p>
+      <pre><code>findstr /S /N "TODO" juego\*.py juego\templates\juego\*.html</code></pre>
+    </div>
+
+    <!-- ================================================================== -->
+    <h2 id="niveles">5. Los cuatro niveles, paso a paso</h2>
+    <p>
+      Avanza en orden: cada nivel se apoya en el anterior y no se corrige un nivel
+      si el previo está incompleto. Para cada punto tienes <strong>qué entregar</strong>,
+      <strong>cómo se hace</strong> y <strong>cómo comprobar</strong> que quedó bien.
+    </p>
+
+    <!-- BRONCE -->
+    <section class="nivel">
+      <div class="nivel-cabeza">
+        <h3>🥉 Bronce &mdash; CRUD completo</h3>
+        <span class="chapa rojo">40 puntos &middot; mínimo para aprobar</span>
+      </div>
+      <p class="meta-nivel">
+        Objetivo: que las cuatro operaciones de la base de datos funcionen desde el
+        navegador, contra MySQL, sin tocar la consola.
+      </p>
+
+      <ul class="tareas">
+        <li>Vista y plantilla de <strong>detalle</strong> de un monstruo.</li>
+        <li>Vista y plantilla de <strong>edición</strong>, reutilizando <code>MonstruoForm</code>.</li>
+        <li>Vista de <strong>eliminación</strong> con página de confirmación y borrado por <code>POST</code>.</li>
+        <li>Mensajes de éxito con <code>django.contrib.messages</code>.</li>
+        <li>El proyecto corre contra MySQL y las migraciones están en la entrega.</li>
+      </ul>
+
+      <h4>Cómo se hace</h4>
+      <p>
+        Las tres vistas siguen el mismo molde. La clave está en el tercer argumento
+        del formulario: con <code>instance=</code> el <code>ModelForm</code> deja de
+        hacer <code>INSERT</code> y pasa a hacer <code>UPDATE</code> sobre esa fila.
+      </p>
+      <pre><code>def detalle(request, pk):
+    monstruo = get_object_or_404(Monstruo, pk=pk)
+    return render(request, "juego/detalle.html", {"monstruo": monstruo})
+
+
+def editar(request, pk):
+    monstruo = get_object_or_404(Monstruo, pk=pk)
+    form = MonstruoForm(request.POST or None, instance=monstruo)   # <-- UPDATE
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        messages.success(request, f"{monstruo.nombre} fue actualizado.")
+        return redirect("juego:detalle", pk=monstruo.pk)
+    return render(request, "juego/formulario.html",
+                  {"form": form, "titulo": f"Editar {monstruo.nombre}"})
+
+
+def eliminar(request, pk):
+    monstruo = get_object_or_404(Monstruo, pk=pk)
+    if request.method == "POST":          # solo el POST borra
+        monstruo.delete()
+        return redirect("juego:lista")
+    return render(request, "juego/confirmar_eliminar.html", {"monstruo": monstruo})</code></pre>
+      <p>
+        No olvides descomentar las rutas en <code>juego/urls.py</code> y los enlaces
+        en las plantillas a medida que cada vista exista.
+      </p>
+
+      <div class="caja ojo">
+        <span class="rotulo">Por qué el borrado va por POST</span>
+        <p>
+          Un enlace <code>GET</code> lo puede disparar cualquier cosa que recorra la
+          página: el navegador al precargar, un buscador, una extensión. Si borrar
+          vive en un <code>GET</code>, tus datos desaparecen sin que nadie haya hecho
+          clic. Por eso la confirmación es un <code>&lt;form method="post"&gt;</code>
+          con <code>{% csrf_token %}</code>:
+          así solo borra quien envió <em>ese</em> formulario desde tu sitio.
+        </p>
+      </div>
+
+      <div class="caja prueba">
+        <span class="rotulo">Cómo compruebo que está bien</span>
+        <ol>
+          <li>Crea un monstruo desde el formulario y revísalo en MySQL:
+            <code>SELECT * FROM juego_monstruo;</code></li>
+          <li>Edítalo y confirma que <strong>no</strong> aparece una fila nueva: el
+            total de filas no debe cambiar.</li>
+          <li>Escribe a mano la URL <code>/monstruo/1/eliminar/</code> en el navegador
+            (eso es un <code>GET</code>): debe mostrar la confirmación y
+            <strong>no borrar nada</strong>.</li>
+          <li>Recién al apretar el botón de la confirmación, la fila desaparece.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- PLATA -->
+    <section class="nivel">
+      <div class="nivel-cabeza">
+        <h3>🥈 Plata &mdash; Validación y consultas</h3>
+        <span class="chapa">20 puntos</span>
+      </div>
+      <p class="meta-nivel">
+        Objetivo: que la aplicación defienda sus propias reglas y que el listado
+        sirva con 200 monstruos, no solo con 5.
+      </p>
+
+      <ul class="tareas">
+        <li>Presupuesto de estadísticas validado en <code>Monstruo.clean()</code>, con mensaje claro en el formulario.</li>
+        <li>Búsqueda por nombre del monstruo <strong>o</strong> del entrenador.</li>
+        <li>Filtro por tipo y orden configurable (nombre, mayor ataque, mayor HP).</li>
+        <li>Paginación de 8 por página.</li>
+        <li>Índice en la columna <code>tipo</code>, con su migración.</li>
+      </ul>
+
+      <h4>Cómo se hace</h4>
+      <p>La validación de varios campos a la vez va en <code>clean()</code>:</p>
+      <pre><code>from django.core.exceptions import ValidationError
+
+def clean(self):
+    super().clean()
+    if self.costo_stats() &gt; PRESUPUESTO_STATS:
+        raise ValidationError(
+            f"El monstruo gasta {self.costo_stats()} puntos y el máximo es "
+            f"{PRESUPUESTO_STATS}. Fórmula: ataque + defensa + hp/2."
+        )</code></pre>
+      <p>
+        La búsqueda en dos campos necesita un <strong>o lógico</strong>, y para eso
+        existe <code>Q</code>. El doble guion bajo salta a la tabla relacionada:
+        <code>entrenador__nombre</code> es un <code>JOIN</code> escrito corto.
+      </p>
+      <pre><code>from django.db.models import Q
+
+monstruos = Monstruo.objects.select_related("entrenador")
+
+if busqueda:
+    monstruos = monstruos.filter(
+        Q(nombre__icontains=busqueda) | Q(entrenador__nombre__icontains=busqueda)
+    )
+if tipo:
+    monstruos = monstruos.filter(tipo=tipo)
+
+monstruos = monstruos.order_by({"ataque": "-ataque", "hp": "-hp"}.get(orden, "nombre"))
+pagina = Paginator(monstruos, 8).get_page(request.GET.get("page"))</code></pre>
+
+      <div class="caja pista">
+        <span class="rotulo">Dos detalles que cuestan puntos</span>
+        <p>
+          <strong>Uno:</strong> el orden no se arma con <code>order_by(request.GET["orden"])</code>
+          directo, porque el usuario podría mandar cualquier cosa; se traduce con un
+          diccionario de valores permitidos, como arriba.
+          <strong>Dos:</strong> al paginar, los enlaces "Siguiente" deben arrastrar
+          <code>q</code>, <code>tipo</code> y <code>orden</code>, o el filtro se pierde
+          en la página 2.
+        </p>
+      </div>
+
+      <div class="caja prueba">
+        <span class="rotulo">Cómo compruebo que está bien</span>
+        <ol>
+          <li>Intenta crear el monstruo tramposo (hp 250, ataque 120, defensa 120):
+            el formulario debe volver con el error explicado, y en MySQL no debe
+            aparecer ninguna fila nueva.</li>
+          <li>Busca el nombre de un entrenador: deben salir sus monstruos.</li>
+          <li>Pasa a la página 2 con un filtro puesto: el filtro debe seguir activo.</li>
+          <li>Verifica el índice en la base:
+            <code>SHOW INDEX FROM juego_monstruo;</code> y compara el
+            <code>EXPLAIN</code> de una consulta filtrada por tipo.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ORO -->
+    <section class="nivel">
+      <div class="nivel-cabeza">
+        <h3>🥇 Oro &mdash; El juego y el SQL</h3>
+        <span class="chapa">25 puntos</span>
+      </div>
+      <p class="meta-nivel">
+        Objetivo: generar datos desde la lógica de la aplicación (no desde un
+        formulario) y después consultarlos de dos maneras distintas.
+      </p>
+
+      <ul class="tareas">
+        <li>Modelo <code>Batalla</code> con sus tres claves foráneas y sus <code>on_delete</code> justificados.</li>
+        <li>Vista <strong>Arena</strong>: elegir dos monstruos, pelear y <strong>guardar</strong> el resultado.</li>
+        <li><strong>Ranking con el ORM</strong>, usando <code>annotate()</code> y <code>Count()</code>.</li>
+        <li><strong>El mismo ranking en SQL</strong>, ejecutado con <code>connection.cursor()</code> y mostrado en pantalla.</li>
+        <li><strong>Historial</strong> de batallas paginado, con la bitácora desplegable.</li>
+      </ul>
+
+      <h4>Cómo se hace: la arena</h4>
+      <p>
+        El motor ya está escrito y no toca la base de datos: recibe dos monstruos y
+        devuelve un diccionario con <code>ganador</code>, <code>turnos</code> y
+        <code>bitacora</code>. Tu trabajo es guardarlo.
+      </p>
+      <pre><code>resultado = pelear(a, b)
+Batalla.objects.create(
+    monstruo_a=a,
+    monstruo_b=b,
+    ganador=resultado["ganador"],        # puede ser None: empate
+    turnos=resultado["turnos"],
+    bitacora="\n".join(resultado["bitacora"]),
+)</code></pre>
+
+      <h4>Cómo se hace: el ranking, dos veces</h4>
+      <p>
+        Primero con el ORM. <code>annotate()</code> agrega una columna calculada a
+        cada fila del resultado; es un <code>COUNT</code> con <code>GROUP BY</code>
+        escrito en Python:
+      </p>
+      <pre><code>tabla = (Monstruo.objects
+         .annotate(
+             peleas=Count("batallas_como_a", distinct=True)
+                  + Count("batallas_como_b", distinct=True),
+             ganadas=Count("batallas_ganadas", distinct=True),
+         )
+         .select_related("entrenador")
+         .order_by("-ganadas", "-nivel", "nombre"))</code></pre>
+      <p>Y después el mismo resultado, pero escrito a mano:</p>
+      <pre><code>consulta = """
+    SELECT  m.id, m.nombre, e.nombre AS entrenador,
+            COUNT(DISTINCT b.id) AS peleas,
+            SUM(CASE WHEN b.ganador_id = m.id THEN 1 ELSE 0 END) AS ganadas
+    FROM        juego_monstruo   AS m
+    INNER JOIN  juego_entrenador AS e ON e.id = m.entrenador_id
+    LEFT JOIN   juego_batalla    AS b
+            ON  b.monstruo_a_id = m.id OR b.monstruo_b_id = m.id
+    GROUP BY    m.id, m.nombre, e.nombre
+    ORDER BY    ganadas DESC, peleas DESC, m.nombre ASC
+"""
+with connection.cursor() as cursor:
+    cursor.execute(consulta)
+    columnas = [c[0] for c in cursor.description]
+    filas = [dict(zip(columnas, f)) for f in cursor.fetchall()]</code></pre>
+
+      <div class="caja">
+        <span class="rotulo">Lo que hay que entender acá</span>
+        <p>
+          El <code>INNER JOIN</code> con entrenador es obligatorio: todo monstruo
+          tiene uno. El <code>LEFT JOIN</code> con batalla es a propósito: un monstruo
+          que nunca peleó <strong>igual debe aparecer</strong> en el ranking, con 0.
+          Si usaras <code>INNER JOIN</code> ahí, los novatos desaparecerían de la
+          tabla, y ese es justamente el error que voy a buscar al corregir.
+        </p>
+      </div>
+
+      <div class="caja ojo">
+        <span class="rotulo">Seguridad, no estilo</span>
+        <p>
+          Si alguna vez necesitas filtrar ese SQL por un dato que viene del usuario,
+          va como parámetro: <code>cursor.execute(sql, [valor])</code>. Nunca pegado
+          con un <code>f-string</code>, porque eso abre la puerta a una inyección SQL.
+          Esto tiene descuento directo en la rúbrica.
+        </p>
+      </div>
+
+      <div class="caja prueba">
+        <span class="rotulo">Cómo compruebo que está bien</span>
+        <ol>
+          <li>Pelea dos monstruos y confirma la fila:
+            <code>SELECT monstruo_a_id, monstruo_b_id, ganador_id, turnos FROM juego_batalla;</code></li>
+          <li>Abre <code>/ranking/</code> y <code>/ranking/sql/</code>: deben mostrar
+            <strong>exactamente</strong> los mismos números y el mismo orden.</li>
+          <li>Crea un monstruo nuevo que no haya peleado: debe aparecer en los dos
+            rankings con 0 peleas.</li>
+          <li>Borra un monstruo que ya peleó y revisa qué pasó con sus batallas.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- DIAMANTE -->
+    <section class="nivel">
+      <div class="nivel-cabeza">
+        <h3>💎 Diamante &mdash; Para quienes van rápido</h3>
+        <span class="chapa">15 puntos</span>
+      </div>
+      <p class="meta-nivel">
+        Objetivo: la relación muchos a muchos, una acción que modifica datos con
+        reglas, y la aplicación entregando datos a otros programas.
+      </p>
+
+      <ul class="tareas">
+        <li>Modelo <code>Item</code> y <code>ManyToManyField</code> en <code>Monstruo</code>, sumando bonus en <code>ataque_total</code> y <code>defensa_total</code>.</li>
+        <li>Acción <strong>Entrenar</strong>: +1 nivel y +3/+3/+5 de stats, bloqueada si se pasa del presupuesto.</li>
+        <li><strong>Foto del monstruo</strong>: subirla desde el formulario, mostrarla en el listado y el detalle, y caer en el emoji cuando no haya.</li>
+        <li>Endpoint <code>/api/ranking/</code> que devuelva JSON.</li>
+        <li>Al menos cuatro tests propios que pasen.</li>
+        <li>Extra libre: llaves de torneo, exportar a CSV, gráfico de victorias.</li>
+      </ul>
+
+      <h4>Cómo se hace</h4>
+      <pre><code># models.py
+items = models.ManyToManyField(Item, blank=True, related_name="monstruos")
+
+@property
+def ataque_total(self):
+    return self.ataque + sum(i.bonus_ataque for i in self.items.all())
+
+# views.py  (entrenar: validar ANTES de guardar)
+monstruo.ataque += 3; monstruo.defensa += 3; monstruo.hp += 5; monstruo.nivel += 1
+try:
+    monstruo.full_clean()      # dispara clean() y los validators
+except ValidationError as error:
+    messages.error(request, f"No pudo entrenar: {error.messages[0]}")
+    return redirect("juego:detalle", pk=pk)
+monstruo.save()</code></pre>
+
+      <h4>Cómo se hace: la foto del monstruo</h4>
+      <p>
+        Esta es la parte donde más gente se frustra, y casi siempre por lo mismo:
+        se salta uno de los cinco pasos. Van en este orden y ninguno es opcional.
+      </p>
+
+      <div class="tabla-scroll"><table>
+        <thead><tr><th>#</th><th>Paso</th><th>Dónde</th><th>Si lo olvidas…</th></tr></thead>
+        <tbody>
+          <tr><td class="pts">1</td><td><code>pip install Pillow</code></td><td>Terminal, con el entorno activo</td><td><code>Cannot use ImageField because Pillow is not installed</code></td></tr>
+          <tr><td class="pts">2</td><td>El campo <code>ImageField</code> + <code>makemigrations</code> y <code>migrate</code></td><td><code>juego/models.py</code></td><td>La columna no existe en MySQL</td></tr>
+          <tr><td class="pts">3</td><td><code>MEDIA_URL</code> y <code>MEDIA_ROOT</code></td><td><code>arena/settings.py</code></td><td>Django no sabe dónde guardar el archivo</td></tr>
+          <tr><td class="pts">4</td><td><code>static(...)</code> dentro de <code>if settings.DEBUG</code></td><td><code>arena/urls.py</code></td><td>La foto se guarda, pero en la página sale la imagen rota</td></tr>
+          <tr><td class="pts">5</td><td><code>enctype</code> en el <code>&lt;form&gt;</code> y <code>request.FILES</code> en la vista</td><td>Plantilla y vista</td><td>El archivo <strong>nunca llega</strong>, y no aparece ningún error</td></tr>
+        </tbody>
+      </table></div>
+
+      <pre><code># 2) models.py
+foto = models.ImageField(upload_to="monstruos/%Y/%m/", blank=True, null=True)
+
+# 3) settings.py
+MEDIA_URL = "media/"              # la dirección web
+MEDIA_ROOT = BASE_DIR / "media"   # la carpeta real en tu disco
+
+# 4) urls.py del proyecto
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# 5) la vista: sin request.FILES el campo viaja vacío
+form = MonstruoForm(request.POST or None, request.FILES or None, instance=monstruo)</code></pre>
+
+      <pre><code>&lt;!-- 5) la plantilla del formulario --&gt;
+&lt;form method="post" enctype="multipart/form-data"&gt;
+
+&lt;!-- y para mostrarla, con el emoji como respaldo --&gt;
+{% if monstruo.foto %}
+  &lt;img class="retrato" src="{{ monstruo.foto.url }}" alt="Foto de {{ monstruo.nombre }}"&gt;
+{% else %}
+  &lt;div class="emoji"&gt;{{ monstruo.emoji }}&lt;/div&gt;
+{% endif %}</code></pre>
+
+      <div class="caja">
+        <span class="rotulo">Lo importante de entender acá</span>
+        <p>
+          MySQL <strong>no guarda la imagen</strong>. En la columna
+          <code>foto</code> queda solo un texto con la ruta, por ejemplo
+          <code>monstruos/2026/10/pyroclasto.png</code>; el archivo vive en la
+          carpeta <code>MEDIA_ROOT</code> de tu disco. Por eso una base de datos
+          restaurada en otro computador muestra imágenes rotas si no copiaste
+          también la carpeta: son dos cosas separadas, y entender esa separación
+          es justamente el objetivo del ejercicio.
+        </p>
+      </div>
+
+      <div class="caja ojo">
+        <span class="rotulo">Validar el peso es tu trabajo</span>
+        <p>
+          <code>ImageField</code> comprueba con Pillow que el archivo sea una
+          imagen de verdad (un <code>.txt</code> renombrado a <code>.png</code>
+          lo rechaza solo), pero <strong>el tamaño no lo revisa nadie</strong>.
+          Agrega un <code>clean_foto()</code> en el formulario que rechace más de
+          2 MB usando <code>foto.size</code>, que viene en bytes. Y pon
+          <code>media/</code> en el <code>.gitignore</code>: las fotos subidas no
+          se versionan ni se entregan.
+        </p>
+      </div>
+
+      <div class="caja pista">
+        <span class="rotulo">Detalle fino</span>
+        <p>
+          <code>save()</code> <strong>no</strong> llama a <code>clean()</code>: los
+          <code>ModelForm</code> lo hacen por ti, pero cuando modificas un objeto en
+          una vista o en el <code>shell</code>, el que tiene que llamar a
+          <code>full_clean()</code> eres tú. Por eso "Entrenar" debe validar
+          explícitamente, y es el punto donde más gente pierde el puntaje.
+        </p>
+      </div>
+
+      <div class="caja prueba">
+        <span class="rotulo">Cómo compruebo que está bien</span>
+        <ol>
+          <li>Equipa un ítem con <code>+10</code> de ataque: el ATK mostrado debe subir 10, pero la columna <code>ataque</code> en MySQL no cambia.</li>
+          <li>Mira la tabla intermedia: <code>SELECT * FROM juego_monstruo_items;</code></li>
+          <li>Entrena un monstruo que esté al borde del presupuesto: debe negarse con un mensaje, no reventar con un error 500.</li>
+          <li>Sube una foto y revisa las dos mitades: la ruta en la base
+            (<code>SELECT nombre, foto FROM juego_monstruo;</code>) y el archivo en
+            el disco (<code>dir /s media</code>).</li>
+          <li>Renombra un <code>.txt</code> a <code>.png</code> y súbelo: debe
+            rechazarlo. Sube una foto de más de 2 MB: también.</li>
+          <li>Un monstruo sin foto debe seguir mostrando su emoji, sin huecos ni
+            imágenes rotas.</li>
+          <li><code>python manage.py test juego</code> debe terminar en <code>OK</code>.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <h2 id="conceptos">6. Conceptos que se evalúan, explicados</h2>
+    <p>
+      Esto es el "para qué" de lo que vas a escribir. Si entiendes estos siete
+      puntos, la defensa es un trámite.
+    </p>
+
+    <dl class="glosario">
+      <dt><code>ModelForm</code></dt>
+      <dd>
+        Un formulario generado a partir del modelo. Te da los campos, el HTML y las
+        validaciones gratis, y <code>form.save()</code> decide solo entre
+        <code>INSERT</code> y <code>UPDATE</code> según si le pasaste
+        <code>instance=</code>. Escribir el formulario a mano no suma puntos: suma
+        trabajo.
+      </dd>
+
+      <dt><code>validators</code> y <code>clean()</code></dt>
+      <dd>
+        Los <code>validators</code> revisan <strong>un</strong> campo
+        (que <code>hp</code> esté entre 50 y 250). <code>clean()</code> revisa
+        <strong>combinaciones</strong> de campos, porque corre cuando todos ya tienen
+        valor. El presupuesto mira tres campos a la vez: por eso va en
+        <code>clean()</code>.
+      </dd>
+
+      <dt>Problema N+1 y <code>select_related()</code></dt>
+      <dd>
+        Si listas 50 monstruos y en la plantilla pides
+        <code>monstruo.entrenador.nombre</code>, Django hace 1 consulta por la lista y
+        50 más, una por cada entrenador: 51 viajes a MySQL.
+        <code>select_related("entrenador")</code> lo resuelve con un
+        <code>JOIN</code> y deja todo en 1 consulta. Compruébalo con
+        <code>len(connection.queries)</code> antes y después.
+      </dd>
+
+      <dt><code>Paginator</code></dt>
+      <dd>
+        Traduce "muéstrame la página 3 de 8 en 8" a
+        <code>LIMIT 8 OFFSET 16</code>. Importa porque sin él tu página crece sin
+        límite: con 5 registros no se nota, con 5.000 se cae.
+      </dd>
+
+      <dt><code>annotate()</code> + <code>Count()</code></dt>
+      <dd>
+        Agrega una columna calculada por fila; en SQL es un <code>COUNT</code> con
+        <code>GROUP BY</code>. Lo contrario &mdash;traer todo y contar con un
+        <code>for</code> en Python&mdash; funciona con datos de prueba y se desmorona
+        en producción. Si cuentas en Python, el puntaje es parcial.
+      </dd>
+
+      <dt><code>connection.cursor()</code></dt>
+      <dd>
+        Es hablarle directo a MySQL a través de <code>mysqlclient</code>, sin ORM de
+        por medio. Sirve para consultas que el ORM expresa con dificultad, y en este
+        taller sirve para <strong>ver</strong> que el ORM no es magia: abajo siempre
+        hubo SQL.
+      </dd>
+
+      <dt>Migraciones</dt>
+      <dd>
+        El historial versionado de tu base de datos.
+        <code>makemigrations</code> escribe el cambio en un archivo Python;
+        <code>migrate</code> lo aplica en MySQL. Quien entrega sin migraciones
+        entrega una base que nadie más puede reconstruir, y eso no se corrige.
+        Para ver el SQL exacto de una migración:
+        <code>python manage.py sqlmigrate juego 0001</code>.
+      </dd>
+    </dl>
+
+    <!-- ================================================================== -->
+    <h2 id="defensa">7. La defensa: preguntas y respuestas esperadas</h2>
+    <p>
+      En la revisión te voy a pedir que abras tu proyecto y expliques. Estas son las
+      preguntas y lo que espero escuchar.
+    </p>
+
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Pregunta</th><th>Qué espero que muestres o digas</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>¿Qué SQL genera tu ranking del ORM?</td>
+          <td>Que lo imprimas en vivo con <code>print(queryset.query)</code> y reconozcas en él el <code>JOIN</code>, el <code>GROUP BY</code> y el <code>COUNT</code></td>
+        </tr>
+        <tr>
+          <td>¿Por qué <code>ganador</code> usa <code>SET_NULL</code> y <code>monstruo_a</code> usa <code>CASCADE</code>?</td>
+          <td>Que la batalla sin un combatiente no tiene sentido, pero sin ganador sí: sigue siendo un hecho histórico. Idealmente, que lo demuestres borrando un monstruo</td>
+        </tr>
+        <tr>
+          <td>¿Por qué <code>entrenador</code> usa <code>PROTECT</code>?</td>
+          <td>Que no quieres monstruos huérfanos y prefieres que la base te frene antes de perder datos</td>
+        </tr>
+        <tr>
+          <td>¿Cuántas consultas hace tu listado?</td>
+          <td>El número, medido con <code>connection.queries</code>, y la explicación de qué ahorró <code>select_related()</code></td>
+        </tr>
+        <tr>
+          <td>¿Para qué sirve el índice en <code>tipo</code>?</td>
+          <td>El <code>EXPLAIN</code> de la consulta filtrada por tipo, y la idea de que un índice evita recorrer toda la tabla a cambio de ocupar espacio y encarecer las escrituras</td>
+        </tr>
+        <tr>
+          <td>¿Por qué el borrado va por <code>POST</code>?</td>
+          <td>Que un <code>GET</code> es disparable por cualquiera y que el <code>csrf_token</code> asegura que la petición salió de tu propio formulario</td>
+        </tr>
+        <tr>
+          <td>¿Dónde vive la regla del presupuesto y por qué ahí?</td>
+          <td>En <code>clean()</code> del modelo, para que valga desde el formulario, el <code>admin</code>, el <code>shell</code> y cualquier código futuro</td>
+        </tr>
+        <tr>
+          <td>Si hiciste la foto: ¿qué guarda MySQL en la columna <code>foto</code>?</td>
+          <td>Que la base guarda <strong>solo la ruta</strong> y el archivo vive en <code>MEDIA_ROOT</code>; que en desarrollo lo entrega Django por el <code>static()</code> de <code>urls.py</code> y en producción lo haría el servidor web</td>
+        </tr>
+      </tbody>
+    </table></div>
+
+    <!-- ================================================================== -->
+    <h2 id="entrega">8. Qué entregar y cómo</h2>
+
+    <ol>
+      <li>
+        La carpeta del proyecto <strong>sin</strong> <code>venv/</code> ni
+        <code>__pycache__/</code>, y <strong>con</strong> las migraciones.
+      </li>
+      <li>
+        El respaldo de tu base de datos:
+        <pre><code>mysqldump -u root -p arena_monstruos &gt; arena_monstruos.sql</code></pre>
+      </li>
+      <li>
+        Un <code>README.md</code> de media página con: nivel alcanzado, qué quedó sin
+        hacer y cómo levantar tu proyecto.
+      </li>
+      <li>Tu monstruo estrella listo para el torneo de cierre del curso.</li>
+    </ol>
+
+    <div class="caja ojo">
+      <span class="rotulo">Reglas de la casa</span>
+      <p>
+        El proyecto debe funcionar con <strong>MySQL</strong>: una entrega que solo
+        corre con SQLite no cumple el requisito de la asignatura. Puedes usar
+        documentación, apuntes y asistentes de IA, pero en la defensa tienes que
+        explicar <strong>cada línea</strong> que entregaste; lo que no puedas
+        explicar, no cuenta.
+      </p>
+    </div>
+
+    <hr>
+
+    <!-- ================================================================== -->
+    <h1 id="rubrica" style="margin-top:10px">Parte 2 &mdash; Rúbrica de evaluación</h1>
+    <p class="bajada">
+      100 puntos repartidos en los cuatro niveles. Son acumulativos: no se corrige
+      Oro si Bronce está incompleto. En cada criterio, la columna del medio es el
+      puntaje parcial típico y dice exactamente por qué se pierde el resto.
+    </p>
+
+    <h2>🥉 Bronce &mdash; CRUD y persistencia (40 puntos)</h2>
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Criterio</th><th>Pts</th><th>Logrado</th><th>Parcial</th><th>No logrado</th></tr></thead>
+      <tbody>
+        <tr><td>Corre contra MySQL con las migraciones aplicadas</td><td class="pts">8</td><td>Levanta sin errores y las tablas existen en MySQL (8)</td><td>Corre, pero con migraciones pendientes o tablas creadas a mano (4)</td><td>No levanta (0)</td></tr>
+        <tr><td>Listado (READ) con los datos y su entrenador</td><td class="pts">6</td><td>Usa <code>select_related</code>, sin N+1 (6)</td><td>Lista, pero consulta de más (3)</td><td>No funciona (0)</td></tr>
+        <tr><td>Detalle del monstruo</td><td class="pts">6</td><td><code>get_object_or_404</code>, muestra stats y entrenador (6)</td><td>Muestra datos, pero revienta con un <code>pk</code> inexistente (3)</td><td>No existe (0)</td></tr>
+        <tr><td>Crear (CREATE) con <code>ModelForm</code></td><td class="pts">8</td><td>Guarda, valida y avisa con <code>messages</code> (8)</td><td>Guarda sin validar o sin avisar (4)</td><td>No guarda (0)</td></tr>
+        <tr><td>Editar (UPDATE)</td><td class="pts">6</td><td>Reutiliza el form con <code>instance=</code> y precarga los datos (6)</td><td>Edita, pero duplica la fila o pierde campos (3)</td><td>No existe (0)</td></tr>
+        <tr><td>Eliminar (DELETE) con confirmación y por POST</td><td class="pts">6</td><td>Confirmación + <code>POST</code> + <code>csrf_token</code> (6)</td><td>Borra directo por <code>GET</code> (2)</td><td>No existe (0)</td></tr>
+      </tbody>
+      <tfoot><tr><td>Subtotal Bronce</td><td class="pts">40</td><td colspan="3">Requisito mínimo para aprobar el taller</td></tr></tfoot>
+    </table></div>
+
+    <h2>🥈 Plata &mdash; Validación y consultas (20 puntos)</h2>
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Criterio</th><th>Pts</th><th>Logrado</th><th>Parcial</th><th>No logrado</th></tr></thead>
+      <tbody>
+        <tr><td>Presupuesto validado en <code>clean()</code></td><td class="pts">6</td><td>Bloquea y explica el error en el formulario (6)</td><td>Valida en la vista o en el template, no en el modelo (3)</td><td>Sin validación (0)</td></tr>
+        <tr><td>Búsqueda por monstruo o entrenador</td><td class="pts">5</td><td>Usa <code>Q(...) | Q(...)</code> con <code>icontains</code> (5)</td><td>Busca solo por nombre del monstruo (3)</td><td>No busca (0)</td></tr>
+        <tr><td>Filtro por tipo y orden configurable</td><td class="pts">5</td><td>Ambos, y se mantienen al cambiar de página (5)</td><td>Solo uno de los dos (2)</td><td>Ninguno (0)</td></tr>
+        <tr><td>Paginación e índice en <code>tipo</code></td><td class="pts">4</td><td><code>Paginator</code> + <code>models.Index</code> migrado (4)</td><td>Solo uno de los dos (2)</td><td>Ninguno (0)</td></tr>
+      </tbody>
+      <tfoot><tr><td>Subtotal Plata</td><td class="pts">20</td><td colspan="3"></td></tr></tfoot>
+    </table></div>
+
+    <h2>🥇 Oro &mdash; El juego y el SQL (25 puntos)</h2>
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Criterio</th><th>Pts</th><th>Logrado</th><th>Parcial</th><th>No logrado</th></tr></thead>
+      <tbody>
+        <tr><td>Modelo <code>Batalla</code> con sus 3 FK y <code>on_delete</code> justificados</td><td class="pts">6</td><td>Correcto y lo sabe explicar (6)</td><td>Modelo creado, pero los <code>on_delete</code> puestos sin criterio (3)</td><td>No existe (0)</td></tr>
+        <tr><td>Arena: resuelve el combate y <strong>lo guarda</strong></td><td class="pts">7</td><td>Guarda ganador, turnos y bitácora (7)</td><td>Pelea, pero no persiste nada (3)</td><td>No funciona (0)</td></tr>
+        <tr><td>Ranking con el ORM</td><td class="pts">6</td><td>Peleas y ganadas correctas, bien ordenado (6)</td><td>Cuenta mal, o cuenta en Python con un <code>for</code> (3)</td><td>No existe (0)</td></tr>
+        <tr><td>El mismo ranking en SQL crudo</td><td class="pts">6</td><td><code>JOIN</code> + <code>GROUP BY</code> y coincide con el ORM (6)</td><td>Funciona, pero sin <code>JOIN</code> o con resultados distintos al ORM (3)</td><td>No existe (0)</td></tr>
+      </tbody>
+      <tfoot><tr><td>Subtotal Oro</td><td class="pts">25</td><td colspan="3"></td></tr></tfoot>
+    </table></div>
+
+    <h2>💎 Diamante &mdash; Avanzado (15 puntos)</h2>
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Criterio</th><th>Pts</th><th>Qué se revisa</th></tr></thead>
+      <tbody>
+        <tr><td><code>Item</code> + <code>ManyToMany</code> que suma bonus</td><td class="pts">3</td><td>Que la tabla intermedia tenga filas y que el ATK mostrado cambie sin alterar la columna <code>ataque</code></td></tr>
+        <tr><td>Acción "Entrenar" que respeta el presupuesto</td><td class="pts">3</td><td>Que llame a <code>full_clean()</code> antes de <code>save()</code> y avise con un mensaje en vez de un error 500</td></tr>
+        <tr><td><strong>Foto del monstruo</strong></td><td class="pts">3</td><td>Que se suba desde el formulario, se vea en listado y detalle, caiga en el emoji cuando no haya, rechace archivos que no son imagen o pesan más de 2 MB, y que <code>media/</code> no venga en la entrega</td></tr>
+        <tr><td>Endpoint JSON <code>/api/ranking/</code></td><td class="pts">3</td><td>Que responda <code>application/json</code> con datos consistentes con el ranking HTML</td></tr>
+        <tr><td>Cuatro o más tests propios que pasan</td><td class="pts">3</td><td>Que <code>python manage.py test</code> termine en <code>OK</code> y que los tests prueben reglas, no <code>assertTrue(True)</code></td></tr>
+      </tbody>
+      <tfoot><tr><td>Subtotal Diamante</td><td class="pts">15</td><td></td></tr></tfoot>
+    </table></div>
+
+    <h2>Descuentos</h2>
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Situación</th><th>Descuento</th><th>Por qué</th></tr></thead>
+      <tbody>
+        <tr><td>Entrega <code>venv/</code> o <code>__pycache__/</code></td><td class="pts">&minus;2</td><td>Son archivos generados: ensucian la entrega y pesan de más</td></tr>
+        <tr><td>Password de MySQL escrita en <code>settings.py</code></td><td class="pts">&minus;3</td><td>Una credencial en el código es una credencial filtrada</td></tr>
+        <tr><td>SQL crudo armado con <code>f-string</code> sobre datos del usuario</td><td class="pts">&minus;5</td><td>Es una inyección SQL esperando ocurrir</td></tr>
+        <tr><td>No entrega el dump <code>.sql</code></td><td class="pts">&minus;5</td><td>Sin los datos no se puede verificar tu trabajo</td></tr>
+        <tr><td>Entrega la carpeta <code>media/</code> con las fotos subidas</td><td class="pts">&minus;2</td><td>Son archivos de usuario, no código: van en el <code>.gitignore</code></td></tr>
+        <tr><td>No puede explicar un trozo de su propio código</td><td class="pts">hasta &minus;20</td><td>El objetivo del taller es que entiendas, no que funcione</td></tr>
+      </tbody>
+    </table></div>
+
+    <h2>Conversión a nota (60% de exigencia)</h2>
+    <div class="tabla-scroll"><table>
+      <thead><tr><th>Puntaje</th><th>100</th><th>90</th><th>80</th><th>70</th><th>60</th><th>50</th><th>40</th><th>30</th><th>20</th><th>0&ndash;10</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Nota</strong></td><td>7,0</td><td>6,5</td><td>6,0</td><td>5,5</td><td><strong>4,0</strong></td><td>3,5</td><td>3,0</td><td>2,5</td><td>2,0</td><td>1,0</td></tr>
+      </tbody>
+    </table></div>
+    <p>
+      Fórmula: <code>nota = 1 + 3·(P/60)</code> si P &le; 60, y
+      <code>nota = 4 + 3·((P&minus;60)/40)</code> si P &gt; 60. Con 60 puntos
+      &mdash;es decir, Bronce completo más la mitad de Plata&mdash; el taller está
+      aprobado.
+    </p>
+
+    <!-- ================================================================== -->
+    <h2 id="autoevaluacion">9. Autoevaluación antes de entregar</h2>
+    <p>
+      Haz esto tú mismo antes de subir el proyecto: es exactamente lo que voy a
+      hacer yo al corregir, en el mismo orden.
+    </p>
+
+    <ul class="tareas">
+      <li><code>pip install -r requirements.txt</code> y <code>python manage.py migrate</code> corren sin errores en una base vacía.</li>
+      <li><code>python manage.py test</code> termina en <code>OK</code>.</li>
+      <li>Un monstruo con hp 250, ataque 120 y defensa 120 <strong>es rechazado</strong> con un mensaje entendible.</li>
+      <li>Un <code>GET</code> directo a <code>/monstruo/1/eliminar/</code> <strong>no borra nada</strong>.</li>
+      <li>Después de una pelea, <code>SELECT * FROM juego_batalla;</code> devuelve la fila con su ganador y su bitácora.</li>
+      <li><code>/ranking/</code> y <code>/ranking/sql/</code> muestran los mismos números en el mismo orden.</li>
+      <li>Un monstruo recién creado, sin peleas, aparece en el ranking con 0.</li>
+      <li>Buscar <code>a' OR 1=1 --</code> en el buscador no rompe la página ni devuelve todo.</li>
+      <li>Si hiciste la foto: se sube, se ve en listado y detalle, un monstruo sin foto muestra su emoji, y un <code>.txt</code> renombrado a <code>.png</code> es rechazado.</li>
+      <li>La carpeta entregada no trae <code>venv/</code> ni <code>__pycache__/</code>, y sí trae las migraciones y el <code>.sql</code>.</li>
+      <li>Puedes explicar, señalando el archivo y la línea, cada punto de la sección 7.</li>
+    </ul>
+
+    <div class="caja">
+      <span class="rotulo">Último consejo</span>
+      <p>
+        No dejes el nivel Oro para la última noche. El modelo <code>Batalla</code>
+        obliga a migrar de nuevo, y migrar con prisa es la forma más rápida de llegar
+        a la entrega con una base que no arranca. Haz Bronce completo y respáldalo
+        &mdash;código y <code>.sql</code>&mdash; antes de seguir.
+      </p>
+    </div>
+
+  </main>
+</div>
+
+<footer class="pie">
+  <div class="pie-fila">
+    <span><strong>INACAP</strong> &middot; Arena de Monstruos &middot; Taller Django + MySQL (mysqlclient)</span>
+    <span>Docente <strong>Lautaro Fernando Cornejo Arcos</strong></span>
+  </div>
+</footer>
+</body>
+</html>

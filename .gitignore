@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.pyc
+.env
+db.sqlite3
+media/
+arena_monstruos.sql

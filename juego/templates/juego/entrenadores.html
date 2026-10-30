@@ -1,0 +1,50 @@
+{% extends "juego/base.html" %}
+
+{% block titulo %}Entrenadores{% endblock %}
+
+{% block contenido %}
+<h1>Entrenadores</h1>
+<p class="sub">{{ total }} entrenador{{ total|pluralize:"es" }} registrado{{ total|pluralize:"s" }}.</p>
+
+<div class="acciones" style="margin-bottom: 16px;">
+  <a class="btn btn-principal" href="{% url 'juego:entrenador_nuevo' %}">+ Registrar entrenador</a>
+</div>
+
+<div class="grilla">
+  {% for entrenador in pagina %}
+    <article class="carta">
+      <h2>{{ entrenador.nombre }}</h2>
+      <p><a href="mailto:{{ entrenador.email }}">{{ entrenador.email }}</a></p>
+      <p class="sub">
+        {{ entrenador.total_monstruos }}
+        monstruo{{ entrenador.total_monstruos|pluralize:"s" }}
+        &middot; Registrado: {{ entrenador.creado|date:"d/m/Y" }}
+      </p>
+      {% if entrenador.monstruos.all %}
+        <h3>Monstruos</h3>
+        <ul>
+          {% for monstruo in entrenador.monstruos.all %}
+            <li><a href="{% url 'juego:detalle' monstruo.pk %}">{{ monstruo.emoji }} {{ monstruo.nombre }}</a></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="sub">Aún no tiene monstruos.</p>
+      {% endif %}
+    </article>
+  {% empty %}
+    <p>Aún no hay entrenadores registrados. <a href="{% url 'juego:entrenador_nuevo' %}">Registra el primero</a>.</p>
+  {% endfor %}
+</div>
+
+{% if pagina.has_other_pages %}
+  <nav class="paginacion" aria-label="Paginación de entrenadores">
+    {% if pagina.has_previous %}
+      <a class="btn" href="?page={{ pagina.previous_page_number }}">Anterior</a>
+    {% endif %}
+    <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}
+      <a class="btn" href="?page={{ pagina.next_page_number }}">Siguiente</a>
+    {% endif %}
+  </nav>
+{% endif %}
+{% endblock %}

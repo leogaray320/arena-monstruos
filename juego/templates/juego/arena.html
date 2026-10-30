@@ -1,0 +1,40 @@
+{% extends "juego/base.html" %}
+
+{% block titulo %}Arena{% endblock %}
+
+{% block contenido %}
+<h1>Arena de combate</h1>
+<p class="sub">Elige dos monstruos distintos. El resultado se guarda en el historial.</p>
+
+<form method="post" class="carta" style="max-width: 560px;">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {{ form.as_p }}
+  <div class="acciones">
+    <button class="btn btn-principal" type="submit">¡A pelear!</button>
+  </div>
+</form>
+
+{% if resultado %}
+  <section class="carta" style="margin-top: 20px;">
+    <h2>
+      {% if resultado.ganador %}
+        🏆 Ganador: {{ resultado.ganador.nombre }}
+      {% else %}
+        🤝 La batalla terminó en empate
+      {% endif %}
+    </h2>
+    <p class="sub">
+      {{ batalla.monstruo_a.nombre }} contra {{ batalla.monstruo_b.nombre }}
+      &middot; {{ resultado.turnos }} turnos
+      &middot; <a href="{% url 'juego:historial' %}">Batalla #{{ batalla.pk }} guardada</a>
+    </p>
+    <h2>Bitácora</h2>
+    <div class="bitacora">
+      {% for linea in resultado.bitacora %}
+        <div>{{ linea }}</div>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "juego/base.html" %}
+
+{% block titulo %}Eliminar monstruo{% endblock %}
+
+{% block contenido %}
+<h1>Eliminar monstruo</h1>
+<p class="sub">¿Seguro que deseas borrar a {{ monstruo.nombre }} de la arena?</p>
+
+<div class="carta" style="max-width: 520px;">
+  <p><strong>Tipo:</strong> {{ monstruo.get_tipo_display }}</p>
+  <p><strong>Entrenador:</strong> {{ monstruo.entrenador.nombre }}</p>
+  <p><strong>Estadísticas:</strong> HP {{ monstruo.hp }} / ATK {{ monstruo.ataque }} / DEF {{ monstruo.defensa }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="acciones">
+      <button class="btn btn-peligro" type="submit">Confirmar eliminación</button>
+      <a class="btn" href="{% url 'juego:detalle' monstruo.pk %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

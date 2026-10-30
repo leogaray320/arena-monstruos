@@ -1,0 +1,68 @@
+{% extends "juego/base.html" %}
+
+{% block titulo %}Monstruopedia{% endblock %}
+
+{% block contenido %}
+<h1>Monstruopedia</h1>
+<p class="sub">{{ total }} monstruo{{ total|pluralize:"s" }} en la base de datos.</p>
+
+<form class="filtros" method="get">
+  <input type="search" name="q" value="{{ busqueda }}" placeholder="Buscar por nombre o entrenador">
+  <select name="tipo">
+    <option value="">Todos los tipos</option>
+    {% for valor, etiqueta in tipos %}
+      <option value="{{ valor }}" {% if valor == tipo %}selected{% endif %}>{{ etiqueta }}</option>
+    {% endfor %}
+  </select>
+  <select name="orden">
+    <option value="nombre" {% if orden == "nombre" %}selected{% endif %}>Nombre (A-Z)</option>
+    <option value="ataque" {% if orden == "ataque" %}selected{% endif %}>Mayor ataque</option>
+    <option value="hp" {% if orden == "hp" %}selected{% endif %}>Mayor HP</option>
+  </select>
+  <button class="btn" type="submit">Filtrar</button>
+  <a class="btn" href="{% url 'juego:lista' %}">Limpiar</a>
+  <a class="btn btn-principal" href="{% url 'juego:crear' %}">+ Reclutar monstruo</a>
+</form>
+
+<div class="grilla">
+  {% for monstruo in pagina %}
+    <article class="carta">
+      {% if monstruo.foto %}
+        <img class="retrato" src="{{ monstruo.foto.url }}" alt="Foto de {{ monstruo.nombre }}">
+      {% else %}
+        <div class="emoji">{{ monstruo.emoji }}</div>
+      {% endif %}
+      <h3><a href="{% url 'juego:detalle' monstruo.pk %}">{{ monstruo.nombre }}</a></h3>
+      <span class="tipo">{{ monstruo.get_tipo_display }}</span>
+      <p class="stats">
+        <span>HP <strong>{{ monstruo.hp }}</strong></span>
+        <span>ATK <strong>{{ monstruo.ataque_total }}</strong></span>
+        <span>DEF <strong>{{ monstruo.defensa_total }}</strong></span>
+      </p>
+      <p class="stats">
+        <span>Nivel <strong>{{ monstruo.nivel }}</strong></span>
+        <span>Poder <strong>{{ monstruo.poder }}</strong></span>
+      </p>
+      <p class="sub">Entrenador: {{ monstruo.entrenador.nombre }}</p>
+      <div class="acciones">
+        <a class="btn" href="{% url 'juego:editar' monstruo.pk %}">Editar</a>
+        <a class="btn btn-peligro" href="{% url 'juego:eliminar' monstruo.pk %}">Eliminar</a>
+      </div>
+    </article>
+  {% empty %}
+    <p>No hay monstruos. <a href="{% url 'juego:crear' %}">Recluta el primero</a>.</p>
+  {% endfor %}
+</div>
+
+{% if pagina.has_other_pages %}
+  <nav class="paginacion" aria-label="Paginación del listado">
+    {% if pagina.has_previous %}
+      <a class="btn" href="?{% if filtros_query %}{{ filtros_query }}&amp;{% endif %}page={{ pagina.previous_page_number }}">Anterior</a>
+    {% endif %}
+    <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}
+      <a class="btn" href="?{% if filtros_query %}{{ filtros_query }}&amp;{% endif %}page={{ pagina.next_page_number }}">Siguiente</a>
+    {% endif %}
+  </nav>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "juego/base.html" %}
+
+{% block titulo %}Ranking{% endblock %}
+
+{% block contenido %}
+<h1>Ranking de monstruos</h1>
+<p class="sub">Posiciones calculadas con el ORM de Django, usando batallas y victorias.</p>
+
+<div class="acciones" style="margin-bottom: 16px;">
+  <a class="btn" href="{% url 'juego:ranking_sql' %}">Ver versión SQL</a>
+  <a class="btn" href="{% url 'juego:api_ranking' %}">Ver API JSON</a>
+  <a class="btn" href="{% url 'juego:arena' %}">Ir a la arena</a>
+</div>
+
+<div style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Posición</th>
+        <th>Monstruo</th>
+        <th>Entrenador</th>
+        <th>Batallas</th>
+        <th>Victorias</th>
+        <th>Nivel</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for monstruo in tabla %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td><a href="{% url 'juego:detalle' monstruo.pk %}">{{ monstruo.emoji }} {{ monstruo.nombre }}</a></td>
+          <td>{{ monstruo.entrenador.nombre }}</td>
+          <td>{{ monstruo.peleas }}</td>
+          <td class="oro">{{ monstruo.ganadas }}</td>
+          <td>{{ monstruo.nivel }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="6">Todavía no hay monstruos registrados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

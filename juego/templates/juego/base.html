@@ -1,0 +1,39 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Arena de Monstruos{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'juego/estilos.css' %}">
+</head>
+<body>
+  <header class="barra">
+    <a class="logo" href="{% url 'juego:lista' %}">&#9876;&#65039; Arena de Monstruos</a>
+    <nav>
+      <a href="{% url 'juego:lista' %}">Monstruopedia</a>
+      <a href="{% url 'juego:crear' %}">Reclutar</a>
+      <a href="{% url 'juego:entrenadores' %}">Entrenadores</a>
+      <a href="{% url 'juego:arena' %}">Arena</a>
+      <a href="{% url 'juego:ranking' %}">Ranking</a>
+      <a href="{% url 'juego:historial' %}">Historial</a>
+      <a href="/admin/">Admin</a>
+    </nav>
+  </header>
+
+  <main>
+    {% if messages %}
+      <ul class="avisos">
+        {% for mensaje in messages %}
+          <li class="aviso {{ mensaje.tags }}">{{ mensaje }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% block contenido %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>INACAP &middot; Taller de Django + MySQL &middot; mysqlclient</p>
+  </footer>
+</body>
+</html>
